@@ -1,0 +1,129 @@
+﻿<Window x:Name="AppWindow" x:Class="KeepMe.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:KeepMe"
+        xmlns:converters="clr-namespace:KeepMe.ValueConverters"
+        Title="Keep Me" Height="525" Width="350"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True">
+    
+    <Window.Resources>
+        <Style TargetType="{x:Type local:MainWindow}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Window}">
+                        <Border>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="0" Opacity="0.4" />
+                            </Border.Effect>
+                            
+                            <Grid>
+                                <Border x:Name="Container"
+                                        CornerRadius="4"
+                                        Background="White" />
+                                
+                                <Grid>
+                                    <Grid.OpacityMask>
+                                        <VisualBrush Visual="{Binding ElementName=Container}" />
+                                    </Grid.OpacityMask>
+                                    
+                                    <ContentPresenter Content="{TemplateBinding Content}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="buttonText" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="buttonToolbar" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="20"
+                                                Width="12"
+                                                Height="12"
+                                                Background="{TemplateBinding Background}">
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Window Toolbar -->
+        <Border Padding="10 10 10 4">
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="0">
+                
+                <Button Background="SeaGreen"
+                        Margin="0 0 5 0" Style="{StaticResource buttonToolbar}"
+                        Command="{Binding MinimizeCommand}"/>
+
+                <Button Background="Crimson"
+                        Margin="0 0 5 0" Style="{StaticResource buttonToolbar}"
+                        Command="{Binding CloseCommand}"/>
+
+            </StackPanel>
+        </Border>
+        <!-- End of Window Toolbar -->
+        
+        <Grid Grid.Row="1">
+            <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Content="{Binding CurrentPage, Converter={x:Static converters:ApplicationPageValueConverter.Instance}}" />
+            <Border x:Name="SnackBar" 
+                    Padding="10" Background="{StaticResource PrimaryForegroundBrush}"
+                    VerticalAlignment="Bottom"
+                    Margin="10,0,10,10" CornerRadius="4"
+                    Visibility="{Binding Message, Converter={x:Static converters:TextCountToVisibilityValueConverter.Instance}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Message, FallbackValue='Successfully added todo.'}"
+                               FontSize="12"
+                               Padding="0 0 10 0"
+                               Foreground="{StaticResource GrayBrush}"
+                               TextWrapping="WrapWithOverflow"/>
+                    
+                    <Button Grid.Column="1"
+                            Content="DISMISS"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="DodgerBlue"
+                            Style="{StaticResource buttonText}"
+                            Cursor="Hand"
+                            Command="{Binding DismissSnackBarCommand}"/>
+                    
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
